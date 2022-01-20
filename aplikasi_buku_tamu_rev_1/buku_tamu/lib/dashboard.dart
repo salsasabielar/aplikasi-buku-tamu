@@ -6,7 +6,16 @@ import 'package:buku_tamu/model/tamu.dart';
 import 'package:buku_tamu/report.dart';
 import 'package:flutter/material.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
+  @override
+  DashboardState createState() => DashboardState();
+}
+
+class DashboardState extends State<Dashboard> {
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

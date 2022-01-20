@@ -1,0 +1,21 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "buku_tamu",
+            "cwd": "aplikasi_buku_tamu_rev_1\\buku_tamu",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "buku_tamu (profile mode)",
+            "cwd": "aplikasi_buku_tamu_rev_1\\buku_tamu",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        }
+    ]
+}

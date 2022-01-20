@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
           fontFamily: "Montserrat",
           canvasColor: Colors.transparent),
       home:
-          LoginPage(),
-          // Dashboard(),
+          //LoginPage(),
+           Dashboard(),
           // Profile(),
           // DetailList(),
           // EntryForm(),

@@ -145,17 +145,17 @@ class HomeState extends State<DetailList> {
     return result;
   }
 
-  Future<Tamu> navigateToDetail(BuildContext context, Tamu tamu) async {
-    var result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return Detail(tamu: tamu);
-        },
-      ),
-    );
-    return result;
-  }
+  // Future<Tamu> navigateToDetail(BuildContext context, Tamu tamu) async {
+  //   var result = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (BuildContext context) {
+  //         return Detail(tamu: tamu);
+  //       },
+  //     ),
+  //   );
+  //   return result;
+  // }
 
   ListView createListView() {
     TextStyle textStyle = Theme.of(context).textTheme.headline5;
@@ -174,7 +174,7 @@ class HomeState extends State<DetailList> {
               this.tamuList[index].nama,
               style: TextStyle(fontSize: 18, color: Colors.black),
             ),
-            //subtitle: Text(this.tamuList[index].price.toString()),
+            subtitle: Text(this.tamuList[index].alamat),
             trailing: GestureDetector(
               child: Icon(Icons.delete_outline_rounded),
               onTap: () async {
@@ -198,14 +198,14 @@ class HomeState extends State<DetailList> {
             //        Navigator.of(context).push(MaterialPageRoute(
             //          builder: (context)=>Detel(tamu: tamuList[index])));
             // },
-            onTap: () async {
-              var tamu = await navigateToDetail(context, this.tamuList[index]);
-              //TODO 4 Panggil Fungsi untuk Edit data
-              // int result = await dbHelper.update(tamu);
-              // if (result > 0) {
-              //   updateListView();
-              // }
-            },
+            // onTap: () async {
+            //   var tamu = await navigateToDetail(context, this.tamuList[index]);
+            //   //TODO 4 Panggil Fungsi untuk Edit data
+            //   // int result = await dbHelper.update(tamu);
+            //   // if (result > 0) {
+            //   //   updateListView();
+            //   // }
+            // },
           ),
         );
       },

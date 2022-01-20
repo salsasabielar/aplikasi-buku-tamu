@@ -22,7 +22,7 @@ class DbHelper {
   //buat tabel baru dengan nama tamu
   void _createDb(Database db, int version) async {
     await db.execute(''
-        'CREATE TABLE tamu (id INTEGER PRIMARY KEY AUTOINCREMENT,nama TEXT, instansi TEXT,menemui TEXT,keperluan TEXT, createDate TEXT, ttd TEXT, photo TEXT)'
+        'CREATE TABLE tamu (id INTEGER PRIMARY KEY AUTOINCREMENT,nama TEXT, instansi TEXT,alamat TEXT,menemui TEXT,keperluan TEXT, createDate TEXT, ttd TEXT, photo TEXT)'
         '');
   }
 
@@ -32,6 +32,13 @@ class DbHelper {
     var mapList = await db.query('tamu', orderBy: 'nama');
     return mapList;
   }
+
+  Future<List<Map<String, dynamic>>> selectBulan() async {
+    Database db = await this.initDb();
+    var mapList = await db.query('tamu', where: 'bulan=?', whereArgs: [getBulan('bulan')]);
+    return mapList;
+  }
+
 
   //create databases
   Future<int> insert(Tamu object) async {
@@ -64,7 +71,15 @@ class DbHelper {
     }
     return tamuList;
   }
-
+ Future<List<Tamu>> getBulan(String bulan) async {
+    var tamuMapList = await select();
+    int count = tamuMapList.length;
+    List<Tamu> tamuList = List<Tamu>();
+    for (int i = 0; i < count; i++) {
+      tamuList.add(Tamu.fromMap(tamuMapList[i]));
+    }
+    return tamuList;
+  }
   factory DbHelper() {
     if (_dbHelper == null) {
       _dbHelper = DbHelper._createObject();
