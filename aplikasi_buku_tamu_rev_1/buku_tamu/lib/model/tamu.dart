@@ -7,10 +7,9 @@ class Tamu {
   String _telp;
   String _tujuan;
   String _keterangan;
-  // String _createDate;
-  // String _imgPhoto;
-  // String _imgTtd;
-  //String _ttd;
+  String _createDate;
+  String _imgPhoto;
+  String _imgTtd;
 
   int get id => _id;
 
@@ -35,21 +34,18 @@ class Tamu {
   String get keterangan => this._keterangan;
   set keterangan(String value) => this._keterangan = value;
 
-  // String get createDate => this._createDate;
-  // set createDate(String value) => this._createDate = value;
+  String get createDate => this._createDate;
+  set createDate(String value) => this._createDate = value;
 
-  // String get imgPhoto => this._imgPhoto;
-  // set imgPhoto(String value) => this._imgPhoto = value;
+  String get imgPhoto => this._imgPhoto;
+  set imgPhoto(String value) => this._imgPhoto = value;
 
-  // String get imgTtd => this._imgTtd;
-  // set imgTtd(String value) => this._imgTtd = value;
-
-  // String get ttd => this._ttd;
-  // set ttd(String value) => this._ttd = value;
+  String get imgTtd => this._imgTtd;
+  set imgTtd(String value) => this._imgTtd = value;
 
 // konstruktor versi 1
-  Tamu(this._nama, this._alamat, this._instansi, this._email, this._telp,
-      this._tujuan, this._keterangan);
+  Tamu(this._nama, this._alamat, this._instansi, this._email,this._telp,this._tujuan, this._keterangan, 
+      this._createDate, this._imgPhoto, this._imgTtd);
 
 // konstruktor versi 2: konversi dari Map ke Tamu
   Tamu.fromMap(Map<String, dynamic> map) {
@@ -58,13 +54,12 @@ class Tamu {
     this._alamat = map['alamat'];
     this._instansi = map['instansi'];
     this._email = map['email'];
-    this._telp = map['telp'];    
+    this._telp = map['telp'];
     this._tujuan = map['tujuan'];
     this._keterangan = map['keterangan'];
-    // this._createDate = map['createDate'];
-    // this._imgPhoto = map['photo'];
-    // this._imgTtd = map['ttd'];
-    // this._ttd = map['ttd'];
+    this._createDate = map['createDate'];
+    this._imgPhoto = map['photo'];
+    this._imgTtd = map['ttd'];
   }
 
   // konversi dari Tamu ke Map
@@ -78,10 +73,9 @@ class Tamu {
     map['telp'] = telp;
     map['tujuan'] = tujuan;
     map['keterangan'] = keterangan;
-    // map['createDate'] = createDate;
-    // map['photo'] = imgPhoto;
-    // map['ttd'] = imgTtd;
-    // map['ttd'] = ttd;
+    map['createDate'] = createDate;
+    map['photo'] = imgPhoto;
+    map['ttd'] = imgTtd;
     return map;
   }
 }

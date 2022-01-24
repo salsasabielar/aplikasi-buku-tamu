@@ -122,121 +122,125 @@ class ReportState extends State<Report> {
 
   ListView buildListView() {
     return ListView(
-        children: <Widget>[
-          // Positioned(
-          //   child: Container(
-          //     child: Align(
-          //       child: Container(
-          //         decoration: BoxDecoration(
-          //           image: DecorationImage(
-          //             image: AssetImage('assets/l tt.png'),
-          //             fit: BoxFit.cover,
-          //           ),
-          //         ),
-          //         width: 200,
-          //         height: 200,
-          //       ),
-          //     ),
-          //     height: 150,
-          //   ),
-          // ),
-          Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: Center(
-              child: Wrap(
-                spacing: 20,
-                runSpacing: 20.0,
-                children: <Widget>[
-                  // DropdownButton(
-                  //   value: dropdownvalue,
-                  //   icon: Icon(Icons.keyboard_arrow_down),
-                  //   items: items.map((String items) {
-                  //     return DropdownMenuItem(
-                  //         value: items, child: Text(items));
-                  //   }).toList(),
-                  //   onChanged: (String newValue) {
-                  //     setState(() {
-                  //       dropdownvalue = newValue;
-                  //     });
-                  //   },
-                  // ),
-                  Expanded(
-                    child: Card(
-                      color: Colors.blue[50],
-                      elevation: 2.0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0)),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          columns: <DataColumn>[
-                            DataColumn(label: Text("Nama")),
-                            DataColumn(label: Text("Instansi")),
-                            DataColumn(label: Text("Alamat")),
-                            // DataColumn(label: Text("Menemui")),
-                            // DataColumn(label: Text("Keperluan")),
-                            // DataColumn(label: Text("Tanggal / Waktu")),
-                            // DataColumn(label: Text("Tanda Tangan")),
-                            // DataColumn(label: Text("Foto")),
-                          ],
-                          rows:
-                              tamuList // Loops through dataColumnText, each iteration assigning the value to element
-                                  .map(
-                                    ((element) => DataRow(
-                                          cells: <DataCell>[
-                                            DataCell(Text(element.nama)),
-                                            DataCell(Text(element.instansi)),
-                                            DataCell(Text(element.alamat)),
-                                            // DataCell(Text(element.menemui)),
-                                            // DataCell(Text(element.keperluan)),
-                                            // DataCell(
-                                            //     Text(element.createDate)),
-                                            // DataCell(
-                                            //   element.imgTtd != null
-                                            //       ? Padding(
-                                            //           padding:
-                                            //               const EdgeInsets
-                                            //                   .all(8.0),
-                                            //           child: Image.file(
-                                            //             File(
-                                            //                 "${element.imgTtd}"),
-                                            //             // fit: BoxFit.fill,
-                                            //             //fit: BoxFit.fill,
-                                            //             width: 50,
-                                            //             height: 400,
-                                            //           ),
-                                            //         )
-                                            //       : Container(),
-                                            // ),
-                                            // DataCell(
-                                            //   element.imgPhoto != null
-                                            //       ? Padding(
-                                            //           padding:
-                                            //               const EdgeInsets
-                                            //                   .all(8.0),
-                                            //           child: Image.file(
-                                            //             File(
-                                            //                 "${element.imgPhoto}"),
-                                            //             //fit: BoxFit.fill,
-                                            //             width: 50,
-                                            //             height: 1000,
-                                            //           ),
-                                            //         )
-                                            //       : Container(),
-                                            // ),
-                                          ],
-                                        )),
-                                  )
-                                  .toList(),
-                        ),
+      children: <Widget>[
+        // Positioned(
+        //   child: Container(
+        //     child: Align(
+        //       child: Container(
+        //         decoration: BoxDecoration(
+        //           image: DecorationImage(
+        //             image: AssetImage('assets/l tt.png'),
+        //             fit: BoxFit.cover,
+        //           ),
+        //         ),
+        //         width: 200,
+        //         height: 200,
+        //       ),
+        //     ),
+        //     height: 150,
+        //   ),
+        // ),
+        Padding(
+          padding: const EdgeInsets.all(1.0),
+          child: Center(
+            child: Wrap(
+              spacing: 20,
+              runSpacing: 20.0,
+              children: <Widget>[
+                // DropdownButton(
+                //   value: dropdownvalue,
+                //   icon: Icon(Icons.keyboard_arrow_down),
+                //   items: items.map((String items) {
+                //     return DropdownMenuItem(
+                //         value: items, child: Text(items));
+                //   }).toList(),
+                //   onChanged: (String newValue) {
+                //     setState(() {
+                //       dropdownvalue = newValue;
+                //     });
+                //   },
+                // ),
+                Expanded(
+                  child: Card(
+                    color: Colors.blue[50],
+                    elevation: 2.0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0)),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: <DataColumn>[
+                          DataColumn(label: Text("Nama")),
+                          DataColumn(label: Text("Alamat")),
+                          DataColumn(label: Text("Instansi")),
+                          DataColumn(label: Text("Email")),
+                          DataColumn(label: Text("Telepon")),
+                          DataColumn(label: Text("Tujuan")),
+                          DataColumn(label: Text("Keterangan")),
+                          DataColumn(label: Text("Tanggal / Waktu")),
+                          DataColumn(label: Text("Tanda Tangan")),
+                          DataColumn(label: Text("Foto")),
+                        ],
+                        rows:
+                            tamuList // Loops through dataColumnText, each iteration assigning the value to element
+                                .map(
+                                  ((element) => DataRow(
+                                        cells: <DataCell>[
+                                          DataCell(Text(element.nama)),
+                                          DataCell(Text(element.alamat)),
+                                          DataCell(Text(element.instansi)),
+                                          DataCell(Text(element.email)),
+                                          DataCell(Text(element.telp)),
+                                          DataCell(Text(element.tujuan)),
+                                          DataCell(Text(element.keterangan)),
+                                          DataCell(
+                                              Text(element.createDate)),
+                                          DataCell(
+                                            element.imgTtd != null
+                                                ? Padding(
+                                                    padding:
+                                                        const EdgeInsets
+                                                            .all(8.0),
+                                                    child: Image.file(
+                                                      File(
+                                                          "${element.imgTtd}"),
+                                                      // fit: BoxFit.fill,
+                                                      //fit: BoxFit.fill,
+                                                      width: 50,
+                                                      height: 400,
+                                                    ),
+                                                  )
+                                                : Container(),
+                                          ),
+                                          DataCell(
+                                            element.imgPhoto != null
+                                                ? Padding(
+                                                    padding:
+                                                        const EdgeInsets
+                                                            .all(8.0),
+                                                    child: Image.file(
+                                                      File(
+                                                          "${element.imgPhoto}"),
+                                                      //fit: BoxFit.fill,
+                                                      width: 50,
+                                                      height: 1000,
+                                                    ),
+                                                  )
+                                                : Container(),
+                                          ),
+                                        ],
+                                      )),
+                                )
+                                .toList(),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 }

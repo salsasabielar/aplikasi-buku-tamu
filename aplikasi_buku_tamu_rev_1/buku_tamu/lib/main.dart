@@ -1,4 +1,5 @@
-import 'package:buku_tamu/profile.dart';
+
+import 'package:buku_tamu/huft.dart';
 import 'package:buku_tamu/report.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
@@ -24,12 +25,13 @@ class MyApp extends StatelessWidget {
           fontFamily: "Montserrat",
           canvasColor: Colors.transparent),
       home:
-          //LoginPage(),
-           Dashboard(),
-          // Profile(),
-          // DetailList(),
-          // EntryForm(),
-          // Report(),
+      LoginPage(),
+      //UploadImageDemo(),
+      // Dashboard(),
+      // Profile(),
+      // DetailList(),
+     // EntryForm(),
+      // Report(),
     );
   }
 }

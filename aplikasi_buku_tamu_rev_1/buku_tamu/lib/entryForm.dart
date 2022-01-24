@@ -1,9 +1,9 @@
 //ENTRY FORM DENGAN SQLITE
 
-
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:buku_tamu/dbhelper.dart';
+import 'package:buku_tamu/model/cases.dart';
 import 'package:buku_tamu/model/daftarTamu.dart';
 import 'package:buku_tamu/model/tamu.dart';
 import 'package:buku_tamu/services/api_services.dart';
@@ -21,7 +21,7 @@ import 'dart:core';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class EntryForm extends StatefulWidget {
   String imagePath;
@@ -38,6 +38,8 @@ class EntryForm extends StatefulWidget {
 //class controller
 class EntryFormState extends State<EntryForm> {
   Tamu tamu;
+
+  var dbHelper;
   EntryFormState(this.tamu);
   final ApiService api = ApiService();
   final _addFormKey = GlobalKey<FormState>();
@@ -72,10 +74,10 @@ class EntryFormState extends State<EntryForm> {
         emailController.text,
         telpController.text,
         tujuanController.text,
-        keteranganController.text);
-    // dateNow,
-    // cameraFile.path.toString(),
-    // _imgTtd);
+        keteranganController.text,
+        dateNow,
+        cameraFile.path.toString(),
+        _imgTtd);
     await db.insert(tamu);
   }
 
@@ -88,11 +90,6 @@ class EntryFormState extends State<EntryForm> {
     telpController.text = "";
     tujuanController.text = "";
     keteranganController.text = "";
-  }
-
-  Future<ByteData> getBytesFromFile() async {
-    Uint8List bytes = File(widget.imagePath).readAsBytesSync() as Uint8List;
-    return ByteData.view(bytes.buffer);
   }
 
   @override
@@ -116,12 +113,15 @@ class EntryFormState extends State<EntryForm> {
           .replaceAll(".", "-")
           .replaceAll(":", "-");
       final name = "ttd-$time";
-      final result = await ImageGallerySaver.saveImage(bytes, name: name);
+      final result =
+          await ImageGallerySaver.saveImage(bytes, name: name, quality: 10);
       var path = await FlutterAbsolutePath.getAbsolutePath(result['filePath']);
       print(path);
-      setState(() {
-        _imgTtd = path.toString();
-      });
+      setState(
+        () {
+          _imgTtd = path.toString();
+        },
+      );
       return result['filePath'];
     }
 
@@ -154,11 +154,8 @@ class EntryFormState extends State<EntryForm> {
                   ),
                 ),
               ),
-              //jam
-              // Container(
 
-              //   child: Text(tgl.toString()),
-              // ),
+              //Nama
               Padding(
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                 child: TextField(
@@ -177,6 +174,7 @@ class EntryFormState extends State<EntryForm> {
                   },
                 ),
               ),
+
               //alamat
               Padding(
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -196,6 +194,7 @@ class EntryFormState extends State<EntryForm> {
                   },
                 ),
               ),
+
               //instansi
               Padding(
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -215,12 +214,13 @@ class EntryFormState extends State<EntryForm> {
                   },
                 ),
               ),
+
               // email
               Padding(
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                 child: TextField(
                   controller: emailController,
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
@@ -240,11 +240,11 @@ class EntryFormState extends State<EntryForm> {
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                 child: TextField(
                   controller: telpController,
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
-                    labelText: 'No Telepon',
+                    labelText: 'Telepon',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
@@ -274,6 +274,7 @@ class EntryFormState extends State<EntryForm> {
                   },
                 ),
               ),
+
               //Keterangan
               Padding(
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -294,100 +295,102 @@ class EntryFormState extends State<EntryForm> {
                 ),
               ),
 
-              // // Tanda Tangan
-              // Column(
-              //   children: [
-              //     Container(
-              //       alignment: Alignment.centerRight,
-              //       width: 470.0,
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.end,
-              //         children: [
-              //           Container(
-              //             alignment: Alignment.centerRight,
-              //             child: IconButton(
-              //               icon: Icon(
-              //                 Icons.refresh,
-              //                 size: 28,
-              //                 color: Colors.green,
-              //               ),
-              //               onPressed: () {
-              //                 setState(
-              //                   () {
-              //                     ttdController.clear();
-              //                   },
-              //                 );
-              //               },
-              //             ),
-              //           ),
-              //           Text(
-              //             'Ulangi',
-              //             style: TextStyle(color: Colors.blue, fontSize: 18.0
-              //                 //fontWeight: FontWeight.bold
-              //                 ),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //     Screenshot(
-              //       controller: screenshotController,
-              //       child: Signature(
-              //         height: 300,
-              //         width: 475,
-              //         backgroundColor: Colors.white,
-              //         controller: ttdController,
-              //       ),
-              //     ),
-              //   ],
-              // ),
+              // Tanda Tangan
+              Column(
+                children: [
+                  Container(
+                    alignment: Alignment.centerRight,
+                    width: 470.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.refresh,
+                              size: 28,
+                              color: Colors.green,
+                            ),
+                            onPressed: () {
+                              setState(
+                                () {
+                                  ttdController.clear();
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                        Text(
+                          'Ulangi',
+                          style: TextStyle(color: Colors.blue, fontSize: 18.0
+                              //fontWeight: FontWeight.bold
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Screenshot(
+                    controller: screenshotController,
+                    child: Signature(
+                      height: 300,
+                      width: 475,
+                      backgroundColor: Colors.white,
+                      controller: ttdController,
+                    ),
+                  ),
+                ],
+              ),
 
-              // Column(
-              //   children: [
-              //     SizedBox(height: 30,),
-              //     Container(
-              //       alignment: Alignment.centerRight,
-              //       width: 470.0,
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.end,
-              //         children: [
-              //           Container(
-              //             alignment: Alignment.centerRight,
-              //             child: IconButton(
-              //                 icon: Icon(Icons.camera_alt_rounded,
-              //                     size: 28, color: Colors.blueGrey),
-              //                 onPressed: selectFromCamera),
-              //           ),
-              //           Text(
-              //             'Kamera',
-              //             style: TextStyle(color: Colors.blue, fontSize: 18.0
-              //                 //fontWeight: FontWeight.bold
-              //                 ),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ],
-              // ),
+              Column(
+                children: [
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    width: 470.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                              icon: Icon(Icons.camera_alt_rounded,
+                                  size: 28, color: Colors.blueGrey),
+                              onPressed: selectFromCamera),
+                        ),
+                        Text(
+                          'Kamera',
+                          style: TextStyle(color: Colors.blue, fontSize: 18.0
+                              //fontWeight: FontWeight.bold
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
 
-              // //kamera
-              // Container(
-              //   child: new Column(
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: <Widget>[
-              //       Container(
-              //         alignment: Alignment.centerRight,
-              //       ),
-              //       SizedBox(
-              //         height: 350.0,
-              //         width: 500.0,
-              //         child: cameraFile == null
-              //             ? Center(
-              //                 child: new Text('Ambil Foto Terlebih Dahulu!'))
-              //             : Center(child: new Image.file(cameraFile)),
-              //       )
-              //     ],
-              //   ),
-              // ),
+              //kamera
+              Container(
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      alignment: Alignment.centerRight,
+                    ),
+                    SizedBox(
+                      height: 350.0,
+                      width: 500.0,
+                      child: cameraFile == null
+                          ? Center(
+                              child: new Text('Ambil Foto Terlebih Dahulu!'))
+                          : Center(child: new Image.file(cameraFile)),
+                    )
+                  ],
+                ),
+              ),
 
               // tombol
               Padding(
@@ -405,9 +408,9 @@ class EntryFormState extends State<EntryForm> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                         onPressed: () async {
-                          // final image = await screenshotController.capture();
-                          // if (image == null) return;
-                          // await saveImage(image);
+                          final image = await screenshotController.capture();
+                          if (image == null) return;
+                          await saveImage(image);
                           if (tamu == null) {
                             // tambah data
                             tamu = Tamu(
@@ -417,40 +420,48 @@ class EntryFormState extends State<EntryForm> {
                                 emailController.text,
                                 telpController.text,
                                 tujuanController.text,
-                                keteranganController.text);
+                                keteranganController.text,
+                                createDateController.text,
+                                cameraFile.path.toString(),
+                                _imgTtd);
+                            // if (_addFormKey.currentState.validate()) {
+                            //         _addFormKey.currentState.save();
+                            //   api.createCase(Cases(
+                            //       nama: namaController.text,
+                            //       alamat: alamatController.text,
+                            //       instansi: instansiController.text,
+                            //       email: emailController.text,
+                            //       telp: telpController.text,
+                            //       tujuan: tujuanController.text,
+                            //       keterangan:
+                            //           keteranganController.text));
 
-                            // createDateController.text,
-                            // cameraFile.path.toString(),
-                            // _imgTtd);
-                            if (_addFormKey.currentState.validate()) {
-                                    _addFormKey.currentState.save();
-                                    api.createCase(DaftarTamu(
-                                        nama: namaController.text,
-                                        alamat: alamatController.text,
-                                        instansi: instansiController.text,
-                                        email: emailController.text,
-                                        telp: telpController.text,
-                                        tujuan: tujuanController.text,
-                                        keterangan:
-                                            keteranganController.text));
+                            //   Navigator.pop(context);
+                            // }
+                            // } else {
+                            //   // ubah data
+                            //   tamu.nama = namaController.text;
+                            //   tamu.alamat = alamatController.text;
+                            //   tamu.instansi = instansiController.text;
+                            //   tamu.email = emailController.text;
+                            //   tamu.telp = telpController.text;
+                            //   tamu.tujuan = tujuanController.text;
+                            //   tamu.keterangan = keteranganController.text;
+                            // }
+                            // //menambahkan waktu sekarang
+                            addRecord(); //menyimpan data
+                            api.createCase(Cases(
+                                nama: namaController.text,
+                                alamat: alamatController.text,
+                                instansi: instansiController.text,
+                                email: emailController.text,
+                                telp: telpController.text,
+                                tujuan: tujuanController.text,
+                                keterangan: keteranganController.text));
+                            // // kembali ke layar sebelumnya dengan membawa objek tamu
 
-                                    Navigator.pop(context);
-                                  }
-                          } else {
-                            // ubah data
-                            tamu.nama = namaController.text;
-                            tamu.alamat = alamatController.text;
-                            tamu.instansi = instansiController.text;
-                            tamu.email = emailController.text;
-                            tamu.telp = telpController.text;
-                            tamu.tujuan = tujuanController.text;
-                            tamu.keterangan = keteranganController.text;
+                            Navigator.pop(context, tamu);
                           }
-                          //menambahkan waktu sekarang
-                          //addRecord();
-                          // kembali ke layar sebelumnya dengan membawa objek tamu
-
-                          Navigator.pop(context, tamu);
                         },
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'package:buku_tamu/API/listTamu.dart';
 import 'package:buku_tamu/detail.dart';
 import 'package:buku_tamu/detailList.dart';
 import 'package:buku_tamu/entryForm.dart';
@@ -16,6 +17,7 @@ class DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,10 +112,16 @@ class DashboardState extends State<Dashboard> {
                           ),
                           GestureDetector(
                             onTap: () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => DetailList(),
+                              //   ),
+                              // );
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DetailList(),
+                                  builder: (context) => ListTamu(),
                                 ),
                               );
                             },
@@ -129,7 +137,8 @@ class DashboardState extends State<Dashboard> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: <Widget>[
                                         SizedBox(
                                           height: 20.0,
@@ -176,7 +185,8 @@ class DashboardState extends State<Dashboard> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: <Widget>[
                                         SizedBox(
                                           height: 20.0,
@@ -220,27 +230,29 @@ class DashboardState extends State<Dashboard> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                  icon: Icon(Icons.home_outlined),
-                  iconSize: 30,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Dashboard(),
-                      ),
-                    );
-                  }),
+                icon: Icon(Icons.home_outlined),
+                iconSize: 30,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Dashboard(),
+                    ),
+                  );
+                },
+              ),
               IconButton(
-                  icon: Icon(Icons.logout),
-                  iconSize: 30,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginPage(),
-                      ),
-                    );
-                  })
+                icon: Icon(Icons.logout),
+                iconSize: 30,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginPage(),
+                    ),
+                  );
+                },
+              )
             ],
           ),
         ),

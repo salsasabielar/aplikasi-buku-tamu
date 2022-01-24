@@ -1,18 +1,23 @@
-import 'package:buku_tamu/detail.dart';
-import 'package:buku_tamu/entryForm.dart';
+import 'package:buku_tamu/API/detailTamu.dart';
+import 'package:buku_tamu/dbhelper.dart';
+import 'package:buku_tamu/model/daftarTamu.dart';
+import 'package:buku_tamu/model/tamu.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'dbhelper.dart';
-import 'model/tamu.dart';
+import 'dart:convert';
 
-//pendukung program asinkron
-class DetailList extends StatefulWidget {
+import 'package:sqflite/sqflite.dart';
+
+class ListTamu extends StatefulWidget {
   @override
-  HomeState createState() => HomeState();
+  _ListTamuState createState() => new _ListTamuState();
 }
 
-class HomeState extends State<DetailList> {
+class _ListTamuState extends State<ListTamu> {
+  final String sUrl =
+      "http://114.4.37.148/bukutamu/index.php/daftartamu/getlisttamu";
+  List<DaftarTamu> listtamu;
   DbHelper dbHelper = DbHelper();
   int count = 0;
   List<Tamu> tamuList;
@@ -20,15 +25,31 @@ class HomeState extends State<DetailList> {
   @override
   void initState() {
     super.initState();
-    updateListView();
+  }
+
+  Future<List<DaftarTamu>> _fetchData() async {
+    try {
+      var jsonResponse = await http.post(sUrl);
+      if (jsonResponse.statusCode == 200) {
+        final jsonItems =
+            json.decode(jsonResponse.body).cast<Map<String, dynamic>>();
+        listtamu = jsonItems.map<DaftarTamu>((json) {
+          return DaftarTamu.fromJson(json);
+        }).toList();
+      }
+    } catch (e) {}
+    return listtamu;
+  }
+
+  Future<Null> _refresh() {
+    return _fetchData().then((_listtamu) {
+      setState(() => listtamu = _listtamu);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (tamuList == null) {
-      tamuList = List<Tamu>();
-    }
-    return Scaffold(
+    return new Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
@@ -91,7 +112,7 @@ class HomeState extends State<DetailList> {
             ),
 
             Expanded(
-              child: createListView(),
+              child: buildRefreshIndicator(),
             ),
 
             // tombol
@@ -133,81 +154,72 @@ class HomeState extends State<DetailList> {
     );
   }
 
-  Future<Tamu> navigateToEntryForm(BuildContext context, Tamu tamu) async {
-    var result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return EntryForm(tamu);
+  RefreshIndicator buildRefreshIndicator() {
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: FutureBuilder<List<DaftarTamu>>(
+        future: _fetchData(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Center(child: CircularProgressIndicator());
+          return Container(
+            margin: EdgeInsets.only(bottom: 0.0),
+            child: ListView(
+              padding: EdgeInsets.only(bottom: 160.0),
+              children: snapshot.data
+                  .map(
+                    (_data) => Column(children: <Widget>[
+                      Card(
+                        color: Colors.grey[200],
+                        elevation: 2.0,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blue[200],
+                                child: Icon(Icons.account_circle),
+                              ),
+                              title: Text(
+                                _data.nama,
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.black),
+                              ),
+                              subtitle: Text(_data.instansi),
+                              trailing: GestureDetector(
+                                child: Icon(Icons.delete_outline_rounded),
+                                onTap: () async {
+                                  //TODO 3 Panggil Fungsi untuk Delete dari DB berdasarkan tamu
+                                  int result = await dbHelper
+                                      .delete(_data.id);
+                                  if (result > 0) {
+                                    updateListView();
+                                  }
+                                },
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailTamu(daftarTamu: _data),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]),
+                  )
+                  .toList(),
+            ),
+          );
         },
       ),
     );
-    return result;
   }
 
-  Future<Tamu> navigateToDetail(BuildContext context, Tamu tamu) async {
-    var result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return Detail(tamu: tamu);
-        },
-      ),
-    );
-    return result;
-  }
-
-  ListView createListView() {
-    TextStyle textStyle = Theme.of(context).textTheme.headline5;
-    return ListView.builder(
-      itemCount: count,
-      itemBuilder: (BuildContext context, int index) {
-        return Card(
-          color: Colors.grey[200],
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.blue[200],
-              child: Icon(Icons.account_circle),
-            ),
-            title: Text(
-              this.tamuList[index].nama,
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
-            subtitle: Text(this.tamuList[index].instansi),
-            trailing: GestureDetector(
-              child: Icon(Icons.delete_outline_rounded),
-              onTap: () async {
-                //TODO 3 Panggil Fungsi untuk Delete dari DB berdasarkan tamu
-                int result = await dbHelper.delete(this.tamuList[index].id);
-                if (result > 0) {
-                  updateListView();
-                }
-              },
-            ),
-            // onTap: () async {
-            //   var tamu =
-            //       await navigateToEntryForm(context, this.tamuList[index]);
-            //   //TODO 4 Panggil Fungsi untuk Edit data
-            //   int result = await dbHelper.update(tamu);
-            //   if (result > 0) {
-            //     updateListView();
-            //   }
-            //},
-            // onTap: (){
-            //        Navigator.of(context).push(MaterialPageRoute(
-            //          builder: (context)=>Detel(tamu: tamuList[index])));
-            // },
-            onTap: () async {
-              var tamu = await navigateToDetail(context, this.tamuList[index]);
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  //update List tamu
   void updateListView() {
     final Future<Database> dbFuture = dbHelper.initDb();
     dbFuture.then((database) {

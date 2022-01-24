@@ -22,14 +22,14 @@ class DbHelper {
   //buat tabel baru dengan nama tamu
   void _createDb(Database db, int version) async {
     await db.execute(''
-        'CREATE TABLE tamu (id INTEGER PRIMARY KEY AUTOINCREMENT,nama TEXT, instansi TEXT,alamat TEXT,menemui TEXT,keperluan TEXT, createDate TEXT, ttd TEXT, photo TEXT)'
+        'CREATE TABLE tamu (id INTEGER PRIMARY KEY AUTOINCREMENT,nama TEXT, alamat TEXT,instansi TEXT,email TEXT, telp TEXT, tujuan TEXT, keterangan TEXT, createDate TEXT, ttd TEXT, photo TEXT)'
         '');
   }
-
+  
   //select databases
   Future<List<Map<String, dynamic>>> select() async {
     Database db = await this.initDb();
-    var mapList = await db.query('tamu', orderBy: 'nama');
+    var mapList = await db.query('tamu', orderBy: 'id desc');
     return mapList;
   }
 
