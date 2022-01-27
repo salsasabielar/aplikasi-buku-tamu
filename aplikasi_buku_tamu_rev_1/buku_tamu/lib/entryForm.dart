@@ -22,6 +22,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:http/http.dart' as http;
 
 class EntryForm extends StatefulWidget {
   String imagePath;
@@ -40,9 +41,12 @@ class EntryFormState extends State<EntryForm> {
   Tamu tamu;
 
   var dbHelper;
+  bool _validate = false;
+  var isUserNameValidate;
   EntryFormState(this.tamu);
   final ApiService api = ApiService();
-  final _addFormKey = GlobalKey<FormState>();
+  // final _addFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = new GlobalKey();
   final TextEditingController namaController = TextEditingController();
   final TextEditingController alamatController = TextEditingController();
   final TextEditingController instansiController = TextEditingController();
@@ -125,6 +129,48 @@ class EntryFormState extends State<EntryForm> {
       return result['filePath'];
     }
 
+    final String uploadEndPoint =
+        "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
+    Future<Cases> file;
+    String status = '';
+    String base64Image;
+    File tmpFile;
+    String errMessage = 'Error Uploading Image';
+
+    setStatus(String message) {
+      setState(() {
+        status = message;
+      });
+    }
+
+    upload(String fileName) {
+      http.post(uploadEndPoint, body: {
+        "image": base64Image,
+        "name": fileName,
+      }).then((result) {
+        setStatus(result.statusCode == 200 ? result.body : errMessage);
+      }).catchError((error) {
+        setStatus(error);
+      });
+    }
+
+    startUpload() {
+      setStatus("Uploading Image...");
+      if (null == tmpFile) {
+        setStatus(errMessage);
+        return;
+      }
+      String fileName = tmpFile.path.split('/').last;
+      upload(fileName);
+    }
+
+    void _saveForm() {
+      final isValid = _formKey.currentState.validate();
+      if (!isValid) {
+        return;
+      }
+    }
+
     //rubah
     return Scaffold(
       // appBar: AppBar(
@@ -133,360 +179,351 @@ class EntryFormState extends State<EntryForm> {
       body: Container(
         child: Padding(
           padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
-          child: ListView(
-            children: <Widget>[
-              Container(
-                child: Positioned(
-                  child: Container(
-                    child: Align(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/l tt.png'),
-                            //fit: BoxFit.cover,
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: <Widget>[
+                Container(
+                  child: Positioned(
+                    child: Container(
+                      child: Align(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('assets/l tt.png'),
+                              //fit: BoxFit.cover,
+                            ),
                           ),
+                          width: 200,
+                          height: 300,
                         ),
-                        width: 200,
-                        height: 300,
+                      ),
+                      height: 150,
+                    ),
+                  ),
+                ),
+
+                //Nama
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: TextFormField(
+                    controller: namaController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Nama',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
-                    height: 150,
+                    // onChanged: (value) {
+                    //   //
+                    // },
+                    validator: (text) {
+                      if (!(text.length > 5) && text.isNotEmpty) {
+                        return "Enter valid name of more then 5 characters!";
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ),
 
-              //Nama
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: TextField(
-                  controller: namaController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Nama',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                //alamat
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: TextFormField(
+                    controller: alamatController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Alamat',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
+                    // onChanged: (value) {
+                    //   //
+                    // },
                   ),
-                  onChanged: (value) {
-                    //
-                  },
                 ),
-              ),
 
-              //alamat
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: TextField(
-                  controller: alamatController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Alamat',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                //instansi
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: TextFormField(
+                    controller: instansiController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Instansi',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
+                    // onChanged: (value) {
+                    //   //
+                    // },
                   ),
-                  onChanged: (value) {
-                    //
-                  },
                 ),
-              ),
 
-              //instansi
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: TextField(
-                  controller: instansiController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Instansi',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                // email
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: TextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
+                    // onChanged: (value) {
+                    //   //
+                    // },
                   ),
-                  onChanged: (value) {
-                    //
-                  },
                 ),
-              ),
 
-              // email
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                //telp
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: TextFormField(
+                    controller: telpController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Telepon',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
+                    // onChanged: (value) {
+                    //   //
+                    // },
                   ),
-                  onChanged: (value) {
-                    //
-                  },
                 ),
-              ),
 
-              //telp
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: TextField(
-                  controller: telpController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Telepon',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                //tujuan
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: TextFormField(
+                    controller: tujuanController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Tujuan',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
+                    // onChanged: (value) {
+                    //   //
+                    // },
                   ),
-                  onChanged: (value) {
-                    //
-                  },
                 ),
-              ),
 
-              //tujuan
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: TextField(
-                  controller: tujuanController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Tujuan',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                //Keterangan
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: TextFormField(
+                    controller: keteranganController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: 'Keterangan',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
+                    // onChanged: (value) {
+                    //   //
+                    // },
                   ),
-                  onChanged: (value) {
-                    //
-                  },
                 ),
-              ),
 
-              //Keterangan
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: TextField(
-                  controller: keteranganController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Keterangan',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    //
-                  },
-                ),
-              ),
-
-              // Tanda Tangan
-              Column(
-                children: [
-                  Container(
-                    alignment: Alignment.centerRight,
-                    width: 470.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.refresh,
-                              size: 28,
-                              color: Colors.green,
-                            ),
-                            onPressed: () {
-                              setState(
-                                () {
-                                  ttdController.clear();
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                        Text(
-                          'Ulangi',
-                          style: TextStyle(color: Colors.blue, fontSize: 18.0
-                              //fontWeight: FontWeight.bold
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Screenshot(
-                    controller: screenshotController,
-                    child: Signature(
-                      height: 300,
-                      width: 475,
-                      backgroundColor: Colors.white,
-                      controller: ttdController,
-                    ),
-                  ),
-                ],
-              ),
-
-              Column(
-                children: [
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    width: 470.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                              icon: Icon(Icons.camera_alt_rounded,
-                                  size: 28, color: Colors.blueGrey),
-                              onPressed: selectFromCamera),
-                        ),
-                        Text(
-                          'Kamera',
-                          style: TextStyle(color: Colors.blue, fontSize: 18.0
-                              //fontWeight: FontWeight.bold
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              //kamera
-              Container(
-                child: new Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+                // Tanda Tangan
+                Column(
+                  children: [
                     Container(
                       alignment: Alignment.centerRight,
+                      width: 470.0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.refresh,
+                                size: 28,
+                                color: Colors.green,
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    ttdController.clear();
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                          Text(
+                            'Ulangi',
+                            style: TextStyle(color: Colors.blue, fontSize: 18.0
+                                //fontWeight: FontWeight.bold
+                                ),
+                          ),
+                        ],
+                      ),
                     ),
+                    Screenshot(
+                      controller: screenshotController,
+                      child: Signature(
+                        height: 300,
+                        width: 475,
+                        backgroundColor: Colors.white,
+                        controller: ttdController,
+                      ),
+                    ),
+                  ],
+                ),
+
+                Column(
+                  children: [
                     SizedBox(
-                      height: 350.0,
-                      width: 500.0,
-                      child: cameraFile == null
-                          ? Center(
-                              child: new Text('Ambil Foto Terlebih Dahulu!'))
-                          : Center(child: new Image.file(cameraFile)),
-                    )
-                  ],
-                ),
-              ),
-
-              // tombol
-              Padding(
-                padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    // tombol simpan
-                    Container(
-                      width: 150,
-                      child: RaisedButton(
-                        color: Theme.of(context).primaryColorLight,
-                        textColor: Theme.of(context).primaryColorDark,
-                        child: Text('Simpan', style: TextStyle(fontSize: 20.0)),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        onPressed: () async {
-                          final image = await screenshotController.capture();
-                          if (image == null) return;
-                          await saveImage(image);
-                          if (tamu == null) {
-                            // tambah data
-                            tamu = Tamu(
-                                namaController.text,
-                                alamatController.text,
-                                instansiController.text,
-                                emailController.text,
-                                telpController.text,
-                                tujuanController.text,
-                                keteranganController.text,
-                                createDateController.text,
-                                cameraFile.path.toString(),
-                                _imgTtd);
-                            // if (_addFormKey.currentState.validate()) {
-                            //         _addFormKey.currentState.save();
-                            //   api.createCase(Cases(
-                            //       nama: namaController.text,
-                            //       alamat: alamatController.text,
-                            //       instansi: instansiController.text,
-                            //       email: emailController.text,
-                            //       telp: telpController.text,
-                            //       tujuan: tujuanController.text,
-                            //       keterangan:
-                            //           keteranganController.text));
-
-                            //   Navigator.pop(context);
-                            // }
-                            // } else {
-                            //   // ubah data
-                            //   tamu.nama = namaController.text;
-                            //   tamu.alamat = alamatController.text;
-                            //   tamu.instansi = instansiController.text;
-                            //   tamu.email = emailController.text;
-                            //   tamu.telp = telpController.text;
-                            //   tamu.tujuan = tujuanController.text;
-                            //   tamu.keterangan = keteranganController.text;
-                            // }
-                            // //menambahkan waktu sekarang
-                            addRecord(); //menyimpan data
-                            api.createCase(Cases(
-                                nama: namaController.text,
-                                alamat: alamatController.text,
-                                instansi: instansiController.text,
-                                email: emailController.text,
-                                telp: telpController.text,
-                                tujuan: tujuanController.text,
-                                keterangan: keteranganController.text));
-                            // // kembali ke layar sebelumnya dengan membawa objek tamu
-
-                            Navigator.pop(context, tamu);
-                          }
-                        },
-                      ),
+                      height: 30,
                     ),
                     Container(
-                      width: 25.0,
-                    ),
-                    // tombol batal
-                    Container(
-                      width: 150,
-                      child: RaisedButton(
-                        color: Theme.of(context).primaryColorLight,
-                        textColor: Theme.of(context).primaryColorDark,
-                        child:
-                            Text('Kembali', style: TextStyle(fontSize: 20.0)),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                      alignment: Alignment.centerRight,
+                      width: 470.0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                                icon: Icon(Icons.camera_alt_rounded,
+                                    size: 28, color: Colors.blueGrey),
+                                onPressed: selectFromCamera),
+                          ),
+                          Text(
+                            'Kamera',
+                            style: TextStyle(color: Colors.blue, fontSize: 18.0
+                                //fontWeight: FontWeight.bold
+                                ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+
+                //kamera
+                Container(
+                  child: new Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment.centerRight,
+                      ),
+                      SizedBox(
+                        height: 350.0,
+                        width: 500.0,
+                        child: cameraFile == null
+                            ? Center(
+                                child: new Text('Ambil Foto Terlebih Dahulu!'))
+                            : Center(child: new Image.file(cameraFile)),
+                      )
+                    ],
+                  ),
+                ),
+
+                // tombol
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      // tombol simpan
+                      Container(
+                        width: 150,
+                        child: RaisedButton(
+                          color: Theme.of(context).primaryColorLight,
+                          textColor: Theme.of(context).primaryColorDark,
+                          child:
+                              Text('Simpan', style: TextStyle(fontSize: 20.0)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          onPressed: () async {
+                            _saveForm();
+                            final image = await screenshotController.capture();
+                            if (image == null) return;
+                            await saveImage(image);
+                            if (tamu == null) {
+                              // tambah data
+                              tamu = Tamu(
+                                  namaController.text,
+                                  alamatController.text,
+                                  instansiController.text,
+                                  emailController.text,
+                                  telpController.text,
+                                  tujuanController.text,
+                                  keteranganController.text,
+                                  createDateController.text,
+                                  cameraFile.path.toString(),
+                                  _imgTtd);
+
+                              //menambahkan waktu sekarang
+
+                              addRecord(); //menyimpan data
+                              api.createCase(Cases(
+                                  nama: namaController.text,
+                                  alamat: alamatController.text,
+                                  instansi: instansiController.text,
+                                  email: emailController.text,
+                                  telp: telpController.text,
+                                  tujuan: tujuanController.text,
+                                  keterangan: keteranganController.text));
+                              startUpload();
+
+                              // // kembali ke layar sebelumnya dengan membawa objek tamu
+
+                              Navigator.pop(context, tamu);
+                            }
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: 25.0,
+                      ),
+                      // tombol batal
+                      Container(
+                        width: 150,
+                        child: RaisedButton(
+                          color: Theme.of(context).primaryColorLight,
+                          textColor: Theme.of(context).primaryColorDark,
+                          child:
+                              Text('Kembali', style: TextStyle(fontSize: 20.0)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

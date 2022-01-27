@@ -210,7 +210,7 @@ class _ListTamuState extends State<ListTamu> {
                           ],
                         ),
                       ),
-                    ]),
+                    ],),
                   )
                   .toList(),
             ),

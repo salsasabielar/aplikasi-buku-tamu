@@ -1,6 +1,8 @@
 import 'dart:convert';
-
 import 'package:buku_tamu/model/cases.dart';
+// import 'package:dio/dio.dart';
+import 'package:gallery_saver/files.dart';
+import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 class ApiService {
@@ -125,4 +127,3 @@ class ApiService {
 
   
 }
-
