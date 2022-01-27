@@ -1,5 +1,6 @@
 //ENTRY FORM DENGAN SQLITE
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:buku_tamu/dbhelper.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class EntryForm extends StatefulWidget {
   String imagePath;
@@ -64,6 +66,8 @@ class EntryFormState extends State<EntryForm> {
     exportBackgroundColor: Colors.white,
     penColor: Colors.black,
   );
+
+  File tmpFile;
 
   var now = DateTime.now();
   Future addRecord() async {
@@ -121,6 +125,7 @@ class EntryFormState extends State<EntryForm> {
           await ImageGallerySaver.saveImage(bytes, name: name, quality: 10);
       var path = await FlutterAbsolutePath.getAbsolutePath(result['filePath']);
       print(path);
+      tmpFile = cameraFile;
       setState(
         () {
           _imgTtd = path.toString();
@@ -131,10 +136,9 @@ class EntryFormState extends State<EntryForm> {
 
     final String uploadEndPoint =
         "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
-    Future<Cases> file;
+    Future<File> file;
     String status = '';
     String base64Image;
-    File tmpFile;
     String errMessage = 'Error Uploading Image';
 
     setStatus(String message) {
@@ -144,6 +148,7 @@ class EntryFormState extends State<EntryForm> {
     }
 
     upload(String fileName) {
+      print("upload suksessssss3333");
       http.post(uploadEndPoint, body: {
         "image": base64Image,
         "name": fileName,
@@ -152,16 +157,23 @@ class EntryFormState extends State<EntryForm> {
       }).catchError((error) {
         setStatus(error);
       });
+
+      print("upload suksessssss44444");
     }
 
     startUpload() {
+      print("upload suksessssss");
       setStatus("Uploading Image...");
       if (null == tmpFile) {
         setStatus(errMessage);
+        print("upload suksessssss return");
         return;
       }
+
       String fileName = tmpFile.path.split('/').last;
+      print("upload suksessssss111");
       upload(fileName);
+      print("upload suksessssss2222");
     }
 
     void _saveForm() {
@@ -169,6 +181,63 @@ class EntryFormState extends State<EntryForm> {
       if (!isValid) {
         return;
       }
+    }
+
+    uploadFile() async {
+      var postUri = Uri.parse(
+          "<http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto>");
+      var request = new http.MultipartRequest("POST", postUri);
+      request.files.add(
+        new http.MultipartFile.fromBytes(
+          'file',
+          await File.fromUri(Uri.parse("<path/to/file>")).readAsBytes(),
+          contentType: new MediaType('image', 'jpeg')));
+
+      request.send().then((response) {
+        if (response.statusCode == 200) print("Uploaded!");
+      });
+    }
+
+    uploadFileToServer(File imagePath) async {
+      var request = new http.MultipartRequest(
+          "POST",
+          Uri.parse(
+              'http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto'));
+
+      request.files.add(
+          await http.MultipartFile.fromPath('profile_pic', imagePath.path));
+      request.send().then((response) {
+        http.Response.fromStream(response).then((onValue) {
+          try {
+            print(onValue.body);
+
+            // print("upload suksessssss dongggg");
+          } catch (e) {
+            // handle exeption
+            print("upload gagalllll");
+          }
+        });
+      });
+    }
+
+    _asyncFileUpload(String text, File file) async {
+      //create multipart request for POST or PATCH method
+      var request = http.MultipartRequest(
+          "POST",
+          Uri.parse(
+              "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto"));
+      //add text fields
+      request.fields["text_field"] = text;
+      //create multipart using filepath, string or bytes
+      var pic = await http.MultipartFile.fromPath("file_field", file.path);
+      //add multipart to request
+      request.files.add(pic);
+      var response = await request.send();
+
+      //Get the response from the server
+      var responseData = await response.stream.toBytes();
+      var responseString = String.fromCharCodes(responseData);
+      print(responseString);
     }
 
     //rubah
@@ -484,6 +553,9 @@ class EntryFormState extends State<EntryForm> {
                               //menambahkan waktu sekarang
 
                               addRecord(); //menyimpan data
+                              // print("sebelum upload gambar");
+                              startUpload();
+                              // print("setelah upload gambar");
                               api.createCase(Cases(
                                   nama: namaController.text,
                                   alamat: alamatController.text,
@@ -492,9 +564,11 @@ class EntryFormState extends State<EntryForm> {
                                   telp: telpController.text,
                                   tujuan: tujuanController.text,
                                   keterangan: keteranganController.text));
-                              startUpload();
 
                               // // kembali ke layar sebelumnya dengan membawa objek tamu
+                              //uploadFileToServer(cameraFile);
+                              //_asyncFileUpload("", cameraFile);
+                              //uploadFile();
 
                               Navigator.pop(context, tamu);
                             }
