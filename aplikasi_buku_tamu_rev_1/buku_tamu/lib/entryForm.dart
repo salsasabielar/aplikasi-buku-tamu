@@ -1,6 +1,7 @@
 //ENTRY FORM DENGAN SQLITE
 
 import 'dart:convert';
+import 'dart:io' as Io;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:buku_tamu/dbhelper.dart';
@@ -100,6 +101,7 @@ class EntryFormState extends State<EntryForm> {
     keteranganController.text = "";
   }
 
+  File uploadimage;
   @override
   Widget build(BuildContext context) {
     selectFromCamera() async {
@@ -108,6 +110,9 @@ class EntryFormState extends State<EntryForm> {
         // maxHeight: 50.0,
         // maxWidth: 50.0,
       );
+      setState(() {
+        uploadimage = cameraFile;
+      });
       GallerySaver.saveImage(cameraFile.path);
       print(cameraFile.path);
 
@@ -125,7 +130,7 @@ class EntryFormState extends State<EntryForm> {
           await ImageGallerySaver.saveImage(bytes, name: name, quality: 10);
       var path = await FlutterAbsolutePath.getAbsolutePath(result['filePath']);
       print(path);
-      tmpFile = cameraFile;
+      //tmpFile = cameraFile;
       setState(
         () {
           _imgTtd = path.toString();
@@ -134,110 +139,158 @@ class EntryFormState extends State<EntryForm> {
       return result['filePath'];
     }
 
-    final String uploadEndPoint =
-        "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
-    Future<File> file;
-    String status = '';
-    String base64Image;
-    String errMessage = 'Error Uploading Image';
+    final imageEncoded = base64.encode(imageData);
+    // final String uploadEndPoint =
+    //     "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
+    // Future<File> file;
+    // String status = '';
+    // String base64Image;
+    // String errMessage = 'Error Uploading Image';
 
-    setStatus(String message) {
-      setState(() {
-        status = message;
-      });
-    }
+    // setStatus(String message) {
+    //   setState(() {
+    //     status = message;
+    //   });
+    // }
 
-    upload(String fileName) {
-      print("upload suksessssss3333");
-      http.post(uploadEndPoint, body: {
-        "image": base64Image,
+    // upload(String fileName) {
+    //   print("upload suksessssss3333");
+    //   http.post(uploadEndPoint, body: {
+    //     "image": base64Image,
+    //     "name": fileName,
+    //   }).then((result) {
+    //     setStatus(result.statusCode == 200 ? result.body : errMessage);
+    //   }).catchError((error) {
+    //     setStatus(error);
+    //   });
+
+    //   print("upload suksessssss44444");
+    // }
+
+    // startUpload() {
+    //   print("upload suksessssss");
+    //   setStatus("Uploading Image...");
+    //   if (null == tmpFile) {
+    //     setStatus(errMessage);
+    //     print("upload suksessssss return");
+    //     return;
+    //   }
+
+    //   String fileName = tmpFile.path.split('/').last;
+    //   print("upload suksessssss111");
+    //   upload(fileName);
+    //   print("upload suksessssss2222");
+    // }
+
+    // void _saveForm() {
+    //   final isValid = _formKey.currentState.validate();
+    //   if (!isValid) {
+    //     return;
+    //   }
+    // }
+
+    // uploadFile() async {
+    //   var postUri = Uri.parse(
+    //       "<http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto>");
+    //   var request = new http.MultipartRequest("POST", postUri);
+    //   request.files.add(
+    //     new http.MultipartFile.fromBytes(
+    //       'file',
+    //       await File.fromUri(Uri.parse("<path/to/file>")).readAsBytes(),
+    //       contentType: new MediaType('image', 'jpeg')));
+
+    //   request.send().then((response) {
+    //     if (response.statusCode == 200) print("Uploaded!");
+    //   });
+    // }
+
+    // uploadFileToServer(File imagePath) async {
+    //   var request = new http.MultipartRequest(
+    //       "POST",
+    //       Uri.parse(
+    //           'http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto'));
+
+    //   request.files.add(
+    //       await http.MultipartFile.fromPath('profile_pic', imagePath.path));
+    //   request.send().then((response) {
+    //     http.Response.fromStream(response).then((onValue) {
+    //       try {
+    //         print(onValue.body);
+
+    //         // print("upload suksessssss dongggg");
+    //       } catch (e) {
+    //         // handle exeption
+    //         print("upload gagalllll");
+    //       }
+    //     });
+    //   });
+    // }
+
+    // _asyncFileUpload(String text, File file) async {
+    //   //create multipart request for POST or PATCH method
+    //   var request = http.MultipartRequest(
+    //       "POST",
+    //       Uri.parse(
+    //           "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto"));
+    //   //add text fields
+    //   request.fields["text_field"] = text;
+    //   //create multipart using filepath, string or bytes
+    //   var pic = await http.MultipartFile.fromPath("file_field", file.path);
+    //   //add multipart to request
+    //   request.files.add(pic);
+    //   var response = await request.send();
+
+    //   //Get the response from the server
+    //   var responseData = await response.stream.toBytes();
+    //   var responseString = String.fromCharCodes(responseData);
+    //   print(responseString);
+    // }
+
+    //   Future<void> chooseImage() async {
+    //       var choosedimage;
+    //       //set source: ImageSource.camera to get image from camera
+    //       setState(() {
+    //           cameraFile = choosedimage;
+    //       });
+    // }
+
+    Future<void> uploadImage() async {
+      //show your own loading or progressing code here
+
+      String uploadurl =
+          "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
+      //dont use http://localhost , because emulator don't get that address
+      //insted use your local IP address or use live URL
+      //hit "ipconfig" in windows or "ip a" in linux to get you local IP
+
+      List<int> imageBytes = uploadimage.readAsBytesSync();
+      String baseimage = base64Encode(imageBytes);
+      print(baseimage);
+      //convert file image to Base64 encoding
+      var fileName;
+      var response = await http.post(uploadurl, body: {
+        "image": baseimage,
         "name": fileName,
-      }).then((result) {
-        setStatus(result.statusCode == 200 ? result.body : errMessage);
-      }).catchError((error) {
-        setStatus(error);
       });
-
-      print("upload suksessssss44444");
-    }
-
-    startUpload() {
-      print("upload suksessssss");
-      setStatus("Uploading Image...");
-      if (null == tmpFile) {
-        setStatus(errMessage);
-        print("upload suksessssss return");
-        return;
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body);
+        print(response.body); //decode json data
+        if (jsondata["error"]) {
+          //check error sent from server
+          print(jsondata["msg"]);
+          //if error return from server, show message from server
+        } else {
+          print("Upload successful");
+        }
+      } else {
+        print("Error during connection to server");
+        //there is error during connecting to server,
+        //status code might be 404 = url not found
       }
-
-      String fileName = tmpFile.path.split('/').last;
-      print("upload suksessssss111");
-      upload(fileName);
-      print("upload suksessssss2222");
-    }
-
-    void _saveForm() {
-      final isValid = _formKey.currentState.validate();
-      if (!isValid) {
-        return;
-      }
-    }
-
-    uploadFile() async {
-      var postUri = Uri.parse(
-          "<http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto>");
-      var request = new http.MultipartRequest("POST", postUri);
-      request.files.add(
-        new http.MultipartFile.fromBytes(
-          'file',
-          await File.fromUri(Uri.parse("<path/to/file>")).readAsBytes(),
-          contentType: new MediaType('image', 'jpeg')));
-
-      request.send().then((response) {
-        if (response.statusCode == 200) print("Uploaded!");
-      });
-    }
-
-    uploadFileToServer(File imagePath) async {
-      var request = new http.MultipartRequest(
-          "POST",
-          Uri.parse(
-              'http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto'));
-
-      request.files.add(
-          await http.MultipartFile.fromPath('profile_pic', imagePath.path));
-      request.send().then((response) {
-        http.Response.fromStream(response).then((onValue) {
-          try {
-            print(onValue.body);
-
-            // print("upload suksessssss dongggg");
-          } catch (e) {
-            // handle exeption
-            print("upload gagalllll");
-          }
-        });
-      });
-    }
-
-    _asyncFileUpload(String text, File file) async {
-      //create multipart request for POST or PATCH method
-      var request = http.MultipartRequest(
-          "POST",
-          Uri.parse(
-              "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto"));
-      //add text fields
-      request.fields["text_field"] = text;
-      //create multipart using filepath, string or bytes
-      var pic = await http.MultipartFile.fromPath("file_field", file.path);
-      //add multipart to request
-      request.files.add(pic);
-      var response = await request.send();
-
-      //Get the response from the server
-      var responseData = await response.stream.toBytes();
-      var responseString = String.fromCharCodes(responseData);
-      print(responseString);
+      // } catch (e) {
+      //   print("Error during converting to Base64");
+      //   //there is error during converting file image to base64 encoding.
+      // }
     }
 
     //rubah
@@ -532,7 +585,7 @@ class EntryFormState extends State<EntryForm> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8)),
                           onPressed: () async {
-                            _saveForm();
+                            // _saveForm();
                             final image = await screenshotController.capture();
                             if (image == null) return;
                             await saveImage(image);
@@ -554,7 +607,8 @@ class EntryFormState extends State<EntryForm> {
 
                               addRecord(); //menyimpan data
                               // print("sebelum upload gambar");
-                              startUpload();
+                              // startUpload();
+
                               // print("setelah upload gambar");
                               api.createCase(Cases(
                                   nama: namaController.text,
@@ -569,6 +623,7 @@ class EntryFormState extends State<EntryForm> {
                               //uploadFileToServer(cameraFile);
                               //_asyncFileUpload("", cameraFile);
                               //uploadFile();
+                              uploadImage();
 
                               Navigator.pop(context, tamu);
                             }
