@@ -139,7 +139,7 @@ class EntryFormState extends State<EntryForm> {
       return result['filePath'];
     }
 
-    final imageEncoded = base64.encode(imageData);
+    
     // final String uploadEndPoint =
     //     "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
     // Future<File> file;
