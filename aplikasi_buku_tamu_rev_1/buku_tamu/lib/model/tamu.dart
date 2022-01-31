@@ -1,3 +1,5 @@
+//MODEL UNTUK INSERT KE DB LOCAL
+
 class Tamu {
   int _id;
   String _nama;

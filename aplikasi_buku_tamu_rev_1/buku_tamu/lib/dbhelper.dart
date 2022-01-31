@@ -39,7 +39,6 @@ class DbHelper {
     return mapList;
   }
 
-
   //create databases
   Future<int> insert(Tamu object) async {
     Database db = await this.initDb();

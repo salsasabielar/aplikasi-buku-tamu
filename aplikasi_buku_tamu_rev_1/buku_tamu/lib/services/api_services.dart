@@ -8,25 +8,7 @@ import 'package:http/http.dart';
 class ApiService {
   final String apiUrl =
       "http://114.4.37.148/bukutamu/index.php/daftartamu/simpan";
-  final String apiUrl2 =
-      "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
-
-  // Future<List> getPopularMovies() async {
-  //   final String uri = apiUrl2;
-
-  //    var http;
-  //   var res = await http.post(apiUrl2);
-  //   if (res.statusCode == HttpStatus.ok) {
-  //     print("Sukses");
-  //     final jsonResponse = json.decode(res.body);
-  //     final moviesMap = jsonResponse['results'];
-  //     List movies = moviesMap.map((i) => Cases.fromJson(i)).toList();
-  //     return movies;
-  //   } else {
-  //     print("Fail");
-  //     return null;
-  //   }
-  // }
+  
   Future<List<Cases>> getCases() async {
     var http;
     var res = await http.post(apiUrl);
@@ -39,21 +21,7 @@ class ApiService {
     } else {
       throw "Failed to load cases list";
     }
-  }
-
-  Future<List<Cases>> getCasesList() async {
-    var http;
-    var res = await http.post(apiUrl2);
-    print(res.body);
-    if (res.statusCode == 200) {
-      List<dynamic> body = jsonDecode(res.body);
-      List<Cases> cases =
-          body.map((dynamic item) => Cases.fromJson(item)).toList();
-      return cases;
-    } else {
-      throw "Failed to load cases list";
-    }
-  }
+  }  
 
   Future<Cases> getCaseById(String id) async {
     final response = await get('$apiUrl/$id');
@@ -73,7 +41,8 @@ class ApiService {
       'email': cases.email,
       'telp': cases.telp,
       'tujuan': cases.tujuan,
-      'keterangan': cases.keterangan
+      'keterangan': cases.keterangan,
+      'namafile': cases.namafile
     };
 
     final Response response = await post(
@@ -83,8 +52,11 @@ class ApiService {
       },
       body: jsonEncode(data),
     );
+    print(response.body);
+
     if (response.statusCode == 200) {
       return Cases.fromJson(json.decode(response.body));
+      
     } else {
       throw Exception('Failed to post cases');
     }
@@ -98,7 +70,8 @@ class ApiService {
       'email': cases.email,
       'telp': cases.telp,
       'tujuan': cases.tujuan,
-      'keterangan': cases.keterangan
+      'keterangan': cases.keterangan,
+      'namafile': cases.namafile
     };
 
     final Response response = await put(

@@ -1,3 +1,5 @@
+//LIST TAMU DENGAN DENGAN DB LOCAL
+
 import 'package:buku_tamu/detail.dart';
 import 'package:buku_tamu/entryForm.dart';
 import 'package:flutter/material.dart';

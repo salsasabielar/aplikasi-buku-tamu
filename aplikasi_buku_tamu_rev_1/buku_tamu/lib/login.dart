@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     var data = {'username': username, 'password': password};
 
     // Starting Web API Call.
-    var response = await http.post(url, body: json.encode(data));
+    var response = await  http.post(url, body: json.encode(data));
     print(response.body);
     // Getting Server response into variable.
     var message = jsonDecode(response.body);

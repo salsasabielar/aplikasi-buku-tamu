@@ -1,3 +1,5 @@
+//MODEL UNTUK INSERT KE API
+
 class Cases {
   final String id;
   final String nama;
@@ -7,8 +9,9 @@ class Cases {
   final String telp;
   final String tujuan;
   final String keterangan;
+  final String namafile;
 
-  Cases({ this.id, this.nama, this.alamat, this.instansi, this.email, this.telp, this.tujuan, this.keterangan });
+  Cases({ this.id, this.nama, this.alamat, this.instansi, this.email, this.telp, this.tujuan, this.keterangan, this.namafile});
 
   factory Cases.fromJson(Map<String, dynamic> json) {
     return Cases(
@@ -20,7 +23,7 @@ class Cases {
       telp: json['telp'] as String,
       tujuan: json['tujuan'] as String,
       keterangan: json['keterangan'] as String,
-      
+      namafile: json['namafile'] as String,
     );
   }
 

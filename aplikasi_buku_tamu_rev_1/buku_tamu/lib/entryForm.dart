@@ -26,6 +26,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:intl/intl.dart';
 
 class EntryForm extends StatefulWidget {
   String imagePath;
@@ -44,7 +45,7 @@ class EntryFormState extends State<EntryForm> {
   Tamu tamu;
 
   var dbHelper;
-  bool _validate = false;
+  bool formIsValidated = false;
   var isUserNameValidate;
   EntryFormState(this.tamu);
   final ApiService api = ApiService();
@@ -58,10 +59,12 @@ class EntryFormState extends State<EntryForm> {
   final TextEditingController tujuanController = TextEditingController();
   final TextEditingController keteranganController = TextEditingController();
   TextEditingController createDateController = TextEditingController();
+  TextEditingController namaFileController = TextEditingController();
   ScreenshotController screenshotController = ScreenshotController();
   double textSize = 20;
   File cameraFile;
   String _imgTtd;
+  String fileName;
   final SignatureController ttdController = SignatureController(
     penStrokeWidth: 2,
     exportBackgroundColor: Colors.white,
@@ -75,6 +78,8 @@ class EntryFormState extends State<EntryForm> {
     var db = DbHelper();
     String dateNow =
         "${now.day}-${now.month}-${now.year} / ${now.hour}:${now.minute}";
+
+// DateTime now = DateTime.now();
 
     var tamu = Tamu(
         namaController.text,
@@ -107,6 +112,7 @@ class EntryFormState extends State<EntryForm> {
     selectFromCamera() async {
       cameraFile = await ImagePicker.pickImage(
         source: ImageSource.camera,
+        imageQuality: 85,
         // maxHeight: 50.0,
         // maxWidth: 50.0,
       );
@@ -114,8 +120,7 @@ class EntryFormState extends State<EntryForm> {
         uploadimage = cameraFile;
       });
       GallerySaver.saveImage(cameraFile.path);
-      print(cameraFile.path);
-
+      print(cameraFile);
       setState(() {});
     }
 
@@ -130,7 +135,6 @@ class EntryFormState extends State<EntryForm> {
           await ImageGallerySaver.saveImage(bytes, name: name, quality: 10);
       var path = await FlutterAbsolutePath.getAbsolutePath(result['filePath']);
       print(path);
-      //tmpFile = cameraFile;
       setState(
         () {
           _imgTtd = path.toString();
@@ -139,158 +143,37 @@ class EntryFormState extends State<EntryForm> {
       return result['filePath'];
     }
 
-    
-    // final String uploadEndPoint =
-    //     "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
-    // Future<File> file;
-    // String status = '';
-    // String base64Image;
-    // String errMessage = 'Error Uploading Image';
-
-    // setStatus(String message) {
-    //   setState(() {
-    //     status = message;
-    //   });
-    // }
-
-    // upload(String fileName) {
-    //   print("upload suksessssss3333");
-    //   http.post(uploadEndPoint, body: {
-    //     "image": base64Image,
-    //     "name": fileName,
-    //   }).then((result) {
-    //     setStatus(result.statusCode == 200 ? result.body : errMessage);
-    //   }).catchError((error) {
-    //     setStatus(error);
-    //   });
-
-    //   print("upload suksessssss44444");
-    // }
-
-    // startUpload() {
-    //   print("upload suksessssss");
-    //   setStatus("Uploading Image...");
-    //   if (null == tmpFile) {
-    //     setStatus(errMessage);
-    //     print("upload suksessssss return");
-    //     return;
-    //   }
-
-    //   String fileName = tmpFile.path.split('/').last;
-    //   print("upload suksessssss111");
-    //   upload(fileName);
-    //   print("upload suksessssss2222");
-    // }
-
-    // void _saveForm() {
-    //   final isValid = _formKey.currentState.validate();
-    //   if (!isValid) {
-    //     return;
-    //   }
-    // }
-
-    // uploadFile() async {
-    //   var postUri = Uri.parse(
-    //       "<http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto>");
-    //   var request = new http.MultipartRequest("POST", postUri);
-    //   request.files.add(
-    //     new http.MultipartFile.fromBytes(
-    //       'file',
-    //       await File.fromUri(Uri.parse("<path/to/file>")).readAsBytes(),
-    //       contentType: new MediaType('image', 'jpeg')));
-
-    //   request.send().then((response) {
-    //     if (response.statusCode == 200) print("Uploaded!");
-    //   });
-    // }
-
-    // uploadFileToServer(File imagePath) async {
-    //   var request = new http.MultipartRequest(
-    //       "POST",
-    //       Uri.parse(
-    //           'http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto'));
-
-    //   request.files.add(
-    //       await http.MultipartFile.fromPath('profile_pic', imagePath.path));
-    //   request.send().then((response) {
-    //     http.Response.fromStream(response).then((onValue) {
-    //       try {
-    //         print(onValue.body);
-
-    //         // print("upload suksessssss dongggg");
-    //       } catch (e) {
-    //         // handle exeption
-    //         print("upload gagalllll");
-    //       }
-    //     });
-    //   });
-    // }
-
-    // _asyncFileUpload(String text, File file) async {
-    //   //create multipart request for POST or PATCH method
-    //   var request = http.MultipartRequest(
-    //       "POST",
-    //       Uri.parse(
-    //           "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto"));
-    //   //add text fields
-    //   request.fields["text_field"] = text;
-    //   //create multipart using filepath, string or bytes
-    //   var pic = await http.MultipartFile.fromPath("file_field", file.path);
-    //   //add multipart to request
-    //   request.files.add(pic);
-    //   var response = await request.send();
-
-    //   //Get the response from the server
-    //   var responseData = await response.stream.toBytes();
-    //   var responseString = String.fromCharCodes(responseData);
-    //   print(responseString);
-    // }
-
-    //   Future<void> chooseImage() async {
-    //       var choosedimage;
-    //       //set source: ImageSource.camera to get image from camera
-    //       setState(() {
-    //           cameraFile = choosedimage;
-    //       });
-    // }
-
     Future<void> uploadImage() async {
       //show your own loading or progressing code here
 
       String uploadurl =
           "http://114.4.37.148/bukutamu/index.php/daftartamu/uploadfoto";
-      //dont use http://localhost , because emulator don't get that address
-      //insted use your local IP address or use live URL
-      //hit "ipconfig" in windows or "ip a" in linux to get you local IP
 
-      List<int> imageBytes = uploadimage.readAsBytesSync();
-      String baseimage = base64Encode(imageBytes);
-      print(baseimage);
-      //convert file image to Base64 encoding
-      var fileName;
-      var response = await http.post(uploadurl, body: {
-        "image": baseimage,
-        "name": fileName,
-      });
-      if (response.statusCode == 200) {
-        var jsondata = json.decode(response.body);
-        print(response.body); //decode json data
-        if (jsondata["error"]) {
-          //check error sent from server
-          print(jsondata["msg"]);
-          //if error return from server, show message from server
-        } else {
-          print("Upload successful");
-        }
-      } else {
-        print("Error during connection to server");
-        //there is error during connecting to server,
-        //status code might be 404 = url not found
+      try {
+        List<int> imageBytes = uploadimage.readAsBytesSync();
+        String baseimage = base64Encode(imageBytes);
+        String formattedDate = DateFormat('yyyy_MM_dd_kk_mm_ss').format(now);
+        fileName = tamu.nama + "-$formattedDate.jpg";
+        print(fileName);
+        Map data = {
+          'name': fileName,
+          'image': "data:image/jpeg;base64," + baseimage
+        };
+
+        var body = json.encode(data);
+        print(body);
+
+        //convert file image to Base64 encoding
+        var response = await http.post(uploadurl,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: body);
+        print(response.body);
+      } catch (e) {
+        print("Error during converting to Base64");
+        //there is error during converting file image to base64 encoding.
       }
-      // } catch (e) {
-      //   print("Error during converting to Base64");
-      //   //there is error during converting file image to base64 encoding.
-      // }
     }
 
     //rubah
@@ -303,6 +186,16 @@ class EntryFormState extends State<EntryForm> {
           padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
           child: Form(
             key: _formKey,
+            onChanged: () {
+              setState(() {
+                if (_formKey.currentState.validate()) {
+                  formIsValidated = true;
+                } else {
+                  formIsValidated = false;
+                }
+              });
+            },
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: ListView(
               children: <Widget>[
                 Container(
@@ -343,8 +236,8 @@ class EntryFormState extends State<EntryForm> {
                     //   //
                     // },
                     validator: (text) {
-                      if (!(text.length > 5) && text.isNotEmpty) {
-                        return "Enter valid name of more then 5 characters!";
+                      if (text == null || text.isEmpty || text.length <= 1) {
+                        return "Isi Form Lebih dari 1 Karakter!";
                       }
                       return null;
                     },
@@ -368,6 +261,12 @@ class EntryFormState extends State<EntryForm> {
                     // onChanged: (value) {
                     //   //
                     // },
+                    validator: (text) {
+                      if (text == null || text.isEmpty|| text.length <= 1) {
+                        return "Isi Form Lebih dari 1 Karakter!";
+                      }
+                      return null;
+                    },
                   ),
                 ),
 
@@ -388,6 +287,12 @@ class EntryFormState extends State<EntryForm> {
                     // onChanged: (value) {
                     //   //
                     // },
+                    validator: (text) {
+                      if (text == null || text.isEmpty|| text.length <= 1) {
+                        return "Isi Form Lebih dari 1 Karakter!";
+                      }
+                      return null;
+                    },
                   ),
                 ),
 
@@ -408,6 +313,12 @@ class EntryFormState extends State<EntryForm> {
                     // onChanged: (value) {
                     //   //
                     // },
+                    validator: (text) {
+                      if (text == null || text.isEmpty|| text.length <= 1) {
+                        return "Isi Form Lebih dari 1 Karakter!";
+                      }
+                      return null;
+                    },
                   ),
                 ),
 
@@ -428,6 +339,12 @@ class EntryFormState extends State<EntryForm> {
                     // onChanged: (value) {
                     //   //
                     // },
+                    validator: (text) {
+                      if (text == null || text.isEmpty|| text.length <= 1) {
+                        return "Isi Form Lebih dari 1 Karakter!";
+                      }
+                      return null;
+                    },
                   ),
                 ),
 
@@ -448,6 +365,12 @@ class EntryFormState extends State<EntryForm> {
                     // onChanged: (value) {
                     //   //
                     // },
+                    validator: (text) {
+                      if (text == null || text.isEmpty|| text.length <= 1) {
+                        return "Isi Form Lebih dari 1 Karakter!";
+                      }
+                      return null;
+                    },
                   ),
                 ),
 
@@ -468,6 +391,12 @@ class EntryFormState extends State<EntryForm> {
                     // onChanged: (value) {
                     //   //
                     // },
+                    validator: (text) {
+                      if (text == null || text.isEmpty|| text.length <= 1) {
+                        return "Isi Form Lebih dari 1 Karakter!";
+                      }
+                      return null;
+                    },
                   ),
                 ),
 
@@ -586,46 +515,63 @@ class EntryFormState extends State<EntryForm> {
                               borderRadius: BorderRadius.circular(8)),
                           onPressed: () async {
                             // _saveForm();
-                            final image = await screenshotController.capture();
-                            if (image == null) return;
-                            await saveImage(image);
-                            if (tamu == null) {
-                              // tambah data
-                              tamu = Tamu(
-                                  namaController.text,
-                                  alamatController.text,
-                                  instansiController.text,
-                                  emailController.text,
-                                  telpController.text,
-                                  tujuanController.text,
-                                  keteranganController.text,
-                                  createDateController.text,
-                                  cameraFile.path.toString(),
-                                  _imgTtd);
+                            if (formIsValidated) {
+                              final image =
+                                  await screenshotController.capture();
+                              if (image == null) return;
+                              await saveImage(image);
+                              if (tamu == null) {
+                                // tambah data
+                                tamu = Tamu(
+                                    namaController.text,
+                                    alamatController.text,
+                                    instansiController.text,
+                                    emailController.text,
+                                    telpController.text,
+                                    tujuanController.text,
+                                    keteranganController.text,
+                                    createDateController.text,
+                                    cameraFile.path.toString(),
+                                    _imgTtd);
 
-                              //menambahkan waktu sekarang
+                                //menambahkan waktu sekarang
 
-                              addRecord(); //menyimpan data
-                              // print("sebelum upload gambar");
-                              // startUpload();
+                                addRecord(); //menyimpan data
 
-                              // print("setelah upload gambar");
-                              api.createCase(Cases(
-                                  nama: namaController.text,
-                                  alamat: alamatController.text,
-                                  instansi: instansiController.text,
-                                  email: emailController.text,
-                                  telp: telpController.text,
-                                  tujuan: tujuanController.text,
-                                  keterangan: keteranganController.text));
+                                api.createCase(Cases(
+                                    nama: namaController.text,
+                                    alamat: alamatController.text,
+                                    instansi: instansiController.text,
+                                    email: emailController.text,
+                                    telp: telpController.text,
+                                    tujuan: tujuanController.text,
+                                    keterangan: keteranganController.text,
+                                    namafile: namaFileController.text));
 
-                              // // kembali ke layar sebelumnya dengan membawa objek tamu
-                              //uploadFileToServer(cameraFile);
-                              //_asyncFileUpload("", cameraFile);
-                              //uploadFile();
-                              uploadImage();
+                                // // kembali ke layar sebelumnya dengan membawa objek tamu
 
-                              Navigator.pop(context, tamu);
+                                uploadImage();
+
+                                Navigator.pop(context, tamu);
+                              }
+                            } else {
+                              // Showing Alert Dialog with Response JSON Message.
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: new Text("Isi Form Terlebih Dahulu"),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: new Text("OK"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             }
                           },
                         ),

@@ -1,9 +1,13 @@
+//DETAIL LIST TAMU DENGAN API
+
 import 'dart:io';
 import 'package:buku_tamu/model/daftarTamu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-// import 'login.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:buku_tamu/dbhelper.dart';
+import 'package:buku_tamu/model/tamu.dart';
 
 class DetailTamu extends StatefulWidget {
   final DaftarTamu daftarTamu;
@@ -15,11 +19,29 @@ class DetailTamu extends StatefulWidget {
 
 class DetailTamuState extends State<DetailTamu> {
   DaftarTamu daftarTamu;
+  DbHelper dbHelper = DbHelper();
+  int count = 0;
+  List<Tamu> tamuList = [];
   DetailTamuState({@required this.daftarTamu}) : super();
 
   @override
   void initState() {
     super.initState();
+    updateListView();
+  }
+
+  void updateListView() {
+    final Future<Database> dbFuture = dbHelper.initDb();
+    dbFuture.then((database) {
+      //TODO 1 Select data dari DB
+      Future<List<Tamu>> tamuListFuture = dbHelper.getTamuList();
+      tamuListFuture.then((tamuList) {
+        setState(() {
+          this.tamuList = tamuList;
+          this.count = tamuList.length;
+        });
+      });
+    });
   }
 
   Widget build(BuildContext context) {
@@ -318,37 +340,81 @@ class DetailTamuState extends State<DetailTamu> {
                                       ),
                             ),
 
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.center,
-                            //   children: [
-                            //     Container(
-                            //         margin: EdgeInsets.all(5),
-                            //         height: 150,
-                            //         width: 140,
-                            //         alignment: Alignment.center,
-                            //         color: Colors.blueGrey[100],
-                            //         child: Image.file(
-                            //           File("${tamu.imgTtd}"),
-                            //           fit: BoxFit.fill,
-                            //           width: MediaQuery.of(context).size.width,
-                            //           height:
-                            //               MediaQuery.of(context).size.height,
-                            //         )),
-                            //     Container(
-                            //         margin: EdgeInsets.all(5),
-                            //         height: 150,
-                            //         width: 150,
-                            //         alignment: Alignment.center,
-                            //         color: Colors.blueGrey[100],
-                            //         child: Image.file(
-                            //           File("${tamu.imgPhoto}"),
-                            //           fit: BoxFit.fill,
-                            //           width: MediaQuery.of(context).size.width,
-                            //           height:
-                            //               MediaQuery.of(context).size.height,
-                            //         )),
-                            //   ],
-                            // ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ...tamuList.map(
+                                  (e) => e.email == daftarTamu.email
+                                      ? Container(
+                                          margin: EdgeInsets.all(5),
+                                          height: 150,
+                                          width: 140,
+                                          alignment: Alignment.center,
+                                          color: Colors.blueGrey[100],
+                                          child: Image.file(
+                                            File(e.imgTtd),
+                                            fit: BoxFit.fill,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: MediaQuery.of(context)
+                                                .size
+                                                .height,
+                                          ),
+                                        )
+                                      : Text(""),
+                                ),
+                                ...tamuList.map(
+                                  (e) => e.email == daftarTamu.email
+                                      ? Container(
+                                          margin: EdgeInsets.all(5),
+                                          height: 150,
+                                          width: 140,
+                                          alignment: Alignment.center,
+                                          color: Colors.blueGrey[100],
+                                          child: Image.file(
+                                            File(e.imgPhoto),
+                                            fit: BoxFit.fill,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: MediaQuery.of(context)
+                                                .size
+                                                .height,
+                                          ),
+                                        )
+                                      : Text(""),
+                                ),
+
+                                // Container(
+                                //   margin: EdgeInsets.all(5),
+                                //   height: 150,
+                                //   width: 140,
+                                //   alignment: Alignment.center,
+                                //   color: Colors.blueGrey[100],
+                                //   child: Image.file(
+                                //     File("${tamuList.map((e) => e.imgTtd)}"),
+                                //     fit: BoxFit.fill,
+                                //     width: MediaQuery.of(context).size.width,
+                                //     height: MediaQuery.of(context).size.height,
+                                //   ),
+                                // ),
+                                // Container(
+                                //   margin: EdgeInsets.all(5),
+                                //   height: 150,
+                                //   width: 150,
+                                //   alignment: Alignment.center,
+                                //   color: Colors.blueGrey[100],
+                                //   child: Text("data"),
+                                //   // Image.file(
+                                //   //   File("${tamuList.map((e) => e.imgPhoto)}"),
+                                //   //   fit: BoxFit.fill,
+                                //   //   width: MediaQuery.of(context).size.width,
+                                //   //   height: MediaQuery.of(context).size.height,
+                                //   // ),
+                                // ),
+                              ],
+                            ),
                           ],
                         ),
                       ),

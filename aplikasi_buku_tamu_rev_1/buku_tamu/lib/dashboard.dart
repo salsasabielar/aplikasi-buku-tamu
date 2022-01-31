@@ -112,18 +112,18 @@ class DashboardState extends State<Dashboard> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => DetailList(),
-                              //   ),
-                              // );
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ListTamu(),
+                                  builder: (context) => DetailList(),
                                 ),
                               );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => ListTamu(),
+                              //   ),
+                              // );
                             },
                             child: Container(
                               width: 260.0,
@@ -245,11 +245,12 @@ class DashboardState extends State<Dashboard> {
                 icon: Icon(Icons.logout),
                 iconSize: 30,
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => LoginPage(),
+                      builder: (BuildContext context) => LoginPage(),
                     ),
+                    (route) => false,
                   );
                 },
               )

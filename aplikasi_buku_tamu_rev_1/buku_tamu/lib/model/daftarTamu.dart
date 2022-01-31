@@ -1,3 +1,5 @@
+//MODEL UNTUK MENAMPILKAN LIST TAMU / GET TAMU
+
 class DaftarTamu {
   final int id;
   final String nama;
