@@ -18,6 +18,7 @@ class DetailState extends State<Detail> {
   DetailState({@required this.tamu}) : super();
 
   @override
+  
   void initState() {
     super.initState();
   }
@@ -126,86 +127,197 @@ class DetailState extends State<Detail> {
                             SizedBox(
                               height: 50.0,
                             ),
-                            Text(
-                              'Nama : ' + tamu.nama,
-                              textAlign: TextAlign.left,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25.0
-                                      //fontWeight: FontWeight.bold
-                                      ),
+                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Nama :',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Text(
+                                    tamu.nama,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 25.0),
+                                  ),
+                                )
+                              ],
                             ),
-                            SizedBox(
-                              height: 5.0,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Alamat :',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Text(
+                                    tamu.alamat,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 25.0),
+                                  ),
+                                )
+                              ],
                             ),
-                            Text(
-                              'Alamat : ' + tamu.alamat,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25.0
-                                      //fontWeight: FontWeight.bold
-                                      ),
+                           Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Instansi :',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Text(
+                                    tamu.instansi,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 25.0),
+                                  ),
+                                )
+                              ],
                             ),
-                            SizedBox(
-                              height: 5.0,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Email :',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Text(
+                                    tamu.email,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 25.0),
+                                  ),
+                                )
+                              ],
                             ),
-                            Text(
-                              'Instansi : ' + tamu.instansi,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25.0
-                                      //fontWeight: FontWeight.bold
-                                      ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Telepon :',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Text(
+                                    tamu.telp,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 25.0),
+                                  ),
+                                )
+                              ],
                             ),
-                            SizedBox(
-                              height: 5.0,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Tujuan :',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Text(
+                                    tamu.tujuan,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 25.0),
+                                  ),
+                                )
+                              ],
                             ),
-                            Text(
-                              'Email : ' + tamu.email,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25.0
-                                      //fontWeight: FontWeight.bold
-                                      ),
+                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Keterangan :',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Text(
+                                    tamu.keterangan,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 25.0),
+                                  ),
+                                )
+                              ],
                             ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              'No. Telepon : ' + tamu.telp,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25.0
-                                      //fontWeight: FontWeight.bold
-                                      ),
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              'Tujuan : ' + tamu.tujuan,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25.0
-                                      //fontWeight: FontWeight.bold
-                                      ),
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              'Keterangan : ' + tamu.keterangan,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25.0
-                                      //fontWeight: FontWeight.bold
-                                      ),
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              'Tanggal / Waktu: ' + tamu.createDate,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25.0
-                                      //fontWeight: FontWeight.bold
-                                      ),
-                            ),
-                            SizedBox(
-                              height: 5.0,
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Tanggal / Waktu :',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(20),
+                                  child: Text(
+                                    tamu.createDate,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 25.0),
+                                  ),
+                                )
+                              ],
                             ),
                             Text(
                               "Tanda Tangan & Foto: ",

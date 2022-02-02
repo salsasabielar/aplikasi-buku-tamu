@@ -181,25 +181,38 @@ class HomeState extends State<DetailList> {
               child: Icon(Icons.delete_outline_rounded),
               onTap: () async {
                 //TODO 3 Panggil Fungsi untuk Delete dari DB berdasarkan tamu
-                int result = await dbHelper.delete(this.tamuList[index].id);
-                if (result > 0) {
-                  updateListView();
-                }
+
+                // Showing Alert Dialog with Response JSON Message.
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: new Text(
+                          "Apakah anda yakin ingin menghapus data ini?"),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: new Text("Ya"),
+                          onPressed: () async {
+                            int result =
+                                await dbHelper.delete(this.tamuList[index].id);
+                            if (result > 0) {
+                              updateListView();
+                            }
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        FlatButton(
+                          child: new Text("Tidak"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
-            // onTap: () async {
-            //   var tamu =
-            //       await navigateToEntryForm(context, this.tamuList[index]);
-            //   //TODO 4 Panggil Fungsi untuk Edit data
-            //   int result = await dbHelper.update(tamu);
-            //   if (result > 0) {
-            //     updateListView();
-            //   }
-            //},
-            // onTap: (){
-            //        Navigator.of(context).push(MaterialPageRoute(
-            //          builder: (context)=>Detel(tamu: tamuList[index])));
-            // },
             onTap: () async {
               var tamu = await navigateToDetail(context, this.tamuList[index]);
             },

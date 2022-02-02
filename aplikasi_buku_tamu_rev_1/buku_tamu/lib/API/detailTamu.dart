@@ -173,7 +173,6 @@ class DetailTamuState extends State<DetailTamu> {
                                 )
                               ],
                             ),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [

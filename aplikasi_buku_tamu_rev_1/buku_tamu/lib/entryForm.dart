@@ -49,7 +49,6 @@ class EntryFormState extends State<EntryForm> {
   var isUserNameValidate;
   EntryFormState(this.tamu);
   final ApiService api = ApiService();
-  // final _addFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKey = new GlobalKey();
   final TextEditingController namaController = TextEditingController();
   final TextEditingController alamatController = TextEditingController();
@@ -59,27 +58,23 @@ class EntryFormState extends State<EntryForm> {
   final TextEditingController tujuanController = TextEditingController();
   final TextEditingController keteranganController = TextEditingController();
   TextEditingController createDateController = TextEditingController();
-  TextEditingController namaFileController = TextEditingController();
   ScreenshotController screenshotController = ScreenshotController();
   double textSize = 20;
   File cameraFile;
   String _imgTtd;
   String fileName;
+  File uploadimage;
+  var now = DateTime.now();
+
   final SignatureController ttdController = SignatureController(
     penStrokeWidth: 2,
     exportBackgroundColor: Colors.white,
     penColor: Colors.black,
   );
 
-  File tmpFile;
-
-  var now = DateTime.now();
   Future addRecord() async {
     var db = DbHelper();
-    String dateNow =
-        "${now.day}-${now.month}-${now.year} / ${now.hour}:${now.minute}";
-
-// DateTime now = DateTime.now();
+    String dateNow = DateFormat('dd-MM-yyyy / kk:mm:ss').format(now);
 
     var tamu = Tamu(
         namaController.text,
@@ -106,13 +101,12 @@ class EntryFormState extends State<EntryForm> {
     keteranganController.text = "";
   }
 
-  File uploadimage;
   @override
   Widget build(BuildContext context) {
     selectFromCamera() async {
       cameraFile = await ImagePicker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 85,
+        imageQuality: 20,
         // maxHeight: 50.0,
         // maxWidth: 50.0,
       );
@@ -154,14 +148,14 @@ class EntryFormState extends State<EntryForm> {
         String baseimage = base64Encode(imageBytes);
         String formattedDate = DateFormat('yyyy_MM_dd_kk_mm_ss').format(now);
         fileName = tamu.nama + "-$formattedDate.jpg";
-        print(fileName);
+        //print(fileName);
         Map data = {
           'name': fileName,
           'image': "data:image/jpeg;base64," + baseimage
         };
 
         var body = json.encode(data);
-        print(body);
+        print(data);
 
         //convert file image to Base64 encoding
         var response = await http.post(uploadurl,
@@ -262,7 +256,7 @@ class EntryFormState extends State<EntryForm> {
                     //   //
                     // },
                     validator: (text) {
-                      if (text == null || text.isEmpty|| text.length <= 1) {
+                      if (text == null || text.isEmpty || text.length <= 1) {
                         return "Isi Form Lebih dari 1 Karakter!";
                       }
                       return null;
@@ -288,7 +282,7 @@ class EntryFormState extends State<EntryForm> {
                     //   //
                     // },
                     validator: (text) {
-                      if (text == null || text.isEmpty|| text.length <= 1) {
+                      if (text == null || text.isEmpty || text.length <= 1) {
                         return "Isi Form Lebih dari 1 Karakter!";
                       }
                       return null;
@@ -314,7 +308,7 @@ class EntryFormState extends State<EntryForm> {
                     //   //
                     // },
                     validator: (text) {
-                      if (text == null || text.isEmpty|| text.length <= 1) {
+                      if (text == null || text.isEmpty || text.length <= 1) {
                         return "Isi Form Lebih dari 1 Karakter!";
                       }
                       return null;
@@ -340,7 +334,7 @@ class EntryFormState extends State<EntryForm> {
                     //   //
                     // },
                     validator: (text) {
-                      if (text == null || text.isEmpty|| text.length <= 1) {
+                      if (text == null || text.isEmpty || text.length <= 1) {
                         return "Isi Form Lebih dari 1 Karakter!";
                       }
                       return null;
@@ -366,7 +360,7 @@ class EntryFormState extends State<EntryForm> {
                     //   //
                     // },
                     validator: (text) {
-                      if (text == null || text.isEmpty|| text.length <= 1) {
+                      if (text == null || text.isEmpty || text.length <= 1) {
                         return "Isi Form Lebih dari 1 Karakter!";
                       }
                       return null;
@@ -392,7 +386,7 @@ class EntryFormState extends State<EntryForm> {
                     //   //
                     // },
                     validator: (text) {
-                      if (text == null || text.isEmpty|| text.length <= 1) {
+                      if (text == null || text.isEmpty || text.length <= 1) {
                         return "Isi Form Lebih dari 1 Karakter!";
                       }
                       return null;
@@ -537,7 +531,9 @@ class EntryFormState extends State<EntryForm> {
                                 //menambahkan waktu sekarang
 
                                 addRecord(); //menyimpan data
+                                uploadImage();
 
+                                print("nama file : " + fileName.toString());
                                 api.createCase(Cases(
                                     nama: namaController.text,
                                     alamat: alamatController.text,
@@ -546,11 +542,9 @@ class EntryFormState extends State<EntryForm> {
                                     telp: telpController.text,
                                     tujuan: tujuanController.text,
                                     keterangan: keteranganController.text,
-                                    namafile: namaFileController.text));
+                                    namafile: fileName.toString()));
 
                                 // // kembali ke layar sebelumnya dengan membawa objek tamu
-
-                                uploadImage();
 
                                 Navigator.pop(context, tamu);
                               }
